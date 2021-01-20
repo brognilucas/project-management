@@ -8,6 +8,8 @@ type Context = {
   getProjectByName: Function;
   addTimeProject: Function;
   getProjects: Function;
+  updateProject: Function;
+  removeProject: Function;
 };
 
 const defaultContextValue: Context = {} as Context;
@@ -19,14 +21,14 @@ type ProviderProps = {
 };
 
 const ProjectsProvider: FunctionComponent<ProviderProps> = (props) => {
-  const [projects, setProjects] = useState(props.initialProjects || []);
+  const [projects, setProjects] = useState([] as Project[]);
 
   function getProjectByName(name: string): Project {
     return projects.find((project) => project.name === name) as Project;
   }
 
-  function getIndexProjectByName(name: string): number {
-    return projects.findIndex((project) => project.name === name);
+  function getIndexById(id: string): number {
+    return projects.findIndex((project) => project.id === id);
   }
 
   function getProjects(): Project[] {
@@ -34,12 +36,21 @@ const ProjectsProvider: FunctionComponent<ProviderProps> = (props) => {
   }
 
   function createProject(project: Project): void {
+    project.generateId();
     setProjects([...projects, project]);
+  }
+
+  function removeProject(id: string) {
+    const remainingProjects = getProjects().filter(
+      (project) => project.id !== id
+    );
+
+    setProjects(remainingProjects);
   }
 
   function updateProject(project: Project) {
     let projects = [...getProjects()];
-    const index = getIndexProjectByName(project.name);
+    const index = getIndexById(project.id);
     projects[index] = project;
     setProjects(projects);
   }
@@ -53,7 +64,14 @@ const ProjectsProvider: FunctionComponent<ProviderProps> = (props) => {
 
   return (
     <ProjectsContext.Provider
-      value={{ createProject, getProjectByName, addTimeProject, getProjects }}
+      value={{
+        createProject,
+        getProjectByName,
+        addTimeProject,
+        getProjects,
+        updateProject,
+        removeProject,
+      }}
     >
       {props.children}
     </ProjectsContext.Provider>

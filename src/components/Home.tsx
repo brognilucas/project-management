@@ -1,36 +1,41 @@
-import React, { FunctionComponent, useContext, useEffect } from "react";
-import { ProjectsContext } from "../context/";
-import { Project } from "../models/Project.model";
-import { Time } from "../models/Time.model";
+import React, { FunctionComponent } from "react";
+import ProjectList from "./ProjectList";
+import { Link } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
 const Home: FunctionComponent = ({}) => {
-  const { getProjects, createProject, addTimeProject } = useContext(
-    ProjectsContext
-  );
-
-  useEffect(() => {
-    createProject(new Project("test", "test"));
-  }, []);
-
-  function updateHour() {
-    addTimeProject(
-      {
-        hour: 30,
-        description: "lol",
-      } as Time,
-      "test"
-    );
-  }
+  const history = useHistory();
 
   return (
-    <div>
-      {getProjects().map((item: Project) => (
-        <div key={item.name} onClick={updateHour}>
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <span
+          style={{
+            textAlign: "left",
+          }}
+        >
           {" "}
-          {item.name} - {item.calculateTotalHours()}{" "}
-        </div>
-      ))}
-    </div>
+          List of Projects{" "}
+        </span>
+        <Link
+          component="button"
+          variant="overline"
+          underline="none"
+          onClick={() => {
+            history.push("/create-project");
+          }}
+        >
+          Create Project
+        </Link>{" "}
+      </div>
+      <ProjectList />
+    </>
   );
 };
 
